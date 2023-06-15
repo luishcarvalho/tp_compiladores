@@ -10,10 +10,10 @@ typedef struct{
     char symbolType[MAX_TYPE_LEN];
     char type[MAX_TYPE_LEN];
     int line;
-}Input; //Entrada na tabela de símbolos
+}Entry; //Entrada na tabela de símbolos
 
-void setInputValues(Input *input, char *symbol, char *symbolType, char *type, int line);
+void setInputValues(Entry *entry, char *symbol, char *symbolType, char *type, int line);
 
-void printInput(Input *input);
+void printInput(Entry entry);
 
-char getSymbol(Input *input);
+char getSymbol(Entry entry);
