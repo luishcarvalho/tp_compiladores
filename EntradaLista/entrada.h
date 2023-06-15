@@ -14,4 +14,6 @@ typedef struct{
 
 void setInputValues(Input *input, char *symbol, char *symbolType, char *type, int line);
 
-void printInput(Input *input)
+void printInput(Input *input);
+
+char getSymbol(Input *input);

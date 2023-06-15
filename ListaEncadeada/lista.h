@@ -23,3 +23,5 @@ void createEmptyList(LinkedList *list);
 void insertCell(LinkedList *list, char *symbol, char *symbolType, char *type, int line);
 
 void printList(LinkedList *list);
+
+int VerificaConflito(Input input, LinkedList *list);

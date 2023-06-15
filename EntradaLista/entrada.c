@@ -10,3 +10,7 @@ void setInputValues(Input *input, char *symbol, char *symbolType, char *type, in
 void printInput(Input *input){ //vai printar tudo cagado
     printf("|%s|%s|%s|%d|\n",input->symbol, input->symbolType, input->type, input->line);
 }
+
+char getSymbol(Input *input){
+    return input->symbol;
+}
