@@ -4,7 +4,7 @@
 
 //estrutura da celula
 typedef struct Cell{
-    Input input;
+    Entry entry;
     struct Cell *pProx;
 }Cell;
 #define CELL_SIZE sizeof(Cell)
@@ -16,7 +16,7 @@ typedef struct{
     struct Cell *start, *end;
 }LinkedList;
 
-LinkedList *initialize();
+void initialize(LinkedList *list);
 
 void createEmptyList(LinkedList *list);
 
@@ -24,4 +24,4 @@ void insertCell(LinkedList *list, char *symbol, char *symbolType, char *type, in
 
 void printList(LinkedList *list);
 
-int VerificaConflito(Input input, LinkedList *list);
+bool checkConflict(Entry entry, LinkedList *list);
