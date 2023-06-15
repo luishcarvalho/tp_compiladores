@@ -10,8 +10,18 @@
 
 /* definicoes regulares */ 
 
-delim		[ \t\n] 
-ws		{delim}+ 
+delim		[ \t\n]
+ws		{delim}+  
+letra		[a-z]
+digitos		[0-9]
+ascii		[(-~ !#$%&]
+char		\'{ascii}
+string		\"{ascii}+
+virgula		[","]
+inteiro		"-"?{digitos}+
+float		({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})
+list		(({inteiro}|{float}|{char}|{string}|{identificador}){virgula})+({inteiro}|{float}|{char}|{string}|{identificador})
+identificador	{letra}[0-9a-z]{0,2} 
 
 %% 
 
@@ -24,19 +34,19 @@ ws		{delim}+
 "el" {return(ELSE);}
 "fr" {return(FOR);}
 "wh" {return(WHILE);}
-/*???*/ "fn" {return(FUNCTION);}
+"fn" {return(FUNCTION);}
 "swc" {return(SWITCH);}
 "cs" {return(CASE);}
 "nil" {return(NULL);}
 "df" {return(DEFAULT);}
 
-"]" {return(INICIOBLOCO);}  
-"[" {return(FIMBLOCO);}  
+"[" {return(INICIOBLOCO);}  
+"]" {return(FIMBLOCO);}  
 "i" {return(INT);}
 "f" {return(FLOAT);}
 "c" {return(CHAR);}
-/*????*/ "s" {return(STRING);}
-/*????*/ "l" {return(LIST);}
+"s" {return(STRING);}
+"l" {return(LIST);}
 
 "+" {return(PLUS);}
 "-" {return(MINUS);}
@@ -67,8 +77,6 @@ ws		{delim}+
 "rt" {return(RETURN);}
 "ct" {return(CONTINUE);}
 
-[a-z][a-z0-9]?[a-z0-9]? {return(ID);} 
-
 [-]*[0-9]+ {return(INT);} 
 
 [-]*[0-9]+[.][0-9]+ {return(DEC);} 
@@ -82,7 +90,12 @@ ws		{delim}+
 ")" {return(')');}
 " ' " {return(' ' ');}
 
-/*???*/ \"([^\"]+)\" {printf("\nFoi encontrado uma sequencia de caracteres. LEXEMA: %s\n",yytext);}  
+{identificador} {return(ID);}
+{float} {return(NDECIMAL);}
+{inteiro} {return(NINTEIRO);}
+{string} {return(STRING);}
+{char} {return(CARACTERE);}
+
 
 
 %% 
