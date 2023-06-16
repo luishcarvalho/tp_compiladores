@@ -40,7 +40,6 @@ identificador	{letra}[0-9a-z]{0,2}
 "nil" {return(NULL);}
 "df" {return(DEFAULT);}
 
-"[" {return(INICIOBLOCO);}  
 "]" {return(FIMBLOCO);}  
 "i" {return(INT);}
 "f" {return(FLOAT);}
