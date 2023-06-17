@@ -40,7 +40,7 @@ digitos		[0-9]
 "i" {printf("%s", yytext); printf("%s", yytext); return(INT);}//OK
 "f" {printf("%s", yytext); printf("%s", yytext); return(FLOAT);}
 "c" {printf("%s", yytext); printf("%s", yytext); return(CHAR);}
-"s" {printf("%s", yytext); printf("%s", yytext); return(STRING);}
+"s" {printf("%s", yytext); printf("%s", yytext); return(STR);}
 "l" {printf("%s", yytext); printf("%s", yytext); return(LIST);}
 
 "+" {printf("%s", yytext); printf("%s", yytext); return(PLUS);}
@@ -75,6 +75,7 @@ digitos		[0-9]
 [-]?[0-9]+  {printf("%s", yytext); return(NINTEIRO);} 
 ({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})  {printf("%s", yytext); return(NDECIMAL);}
 \"([^\"]+)\" {printf("%s", yytext); return(STRING)}  
+\'([^\']) {return(CHARACTER)} 
 
 "," {printf("%s", yytext); return(',');}
 ";" {printf("%s", yytext); return(';');}
