@@ -10,92 +10,80 @@
 
 /* definicoes regulares */ 
 
-delim		[ \t\n]
-ws		{delim}+  
-letra		[a-z]
-digitos		[0-9]
-ascii		[(-~ !#$%&]
-char		\'{ascii}
-string		\"{ascii}+
-virgula		[","]
+delim		[\t] 
+ws		{delim}+ 
+
 inteiro		"-"?{digitos}+
-float		({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})
-list		(({inteiro}|{float}|{char}|{string}|{identificador}){virgula})+({inteiro}|{float}|{char}|{string}|{identificador})
-identificador	{letra}[0-9a-z]{0,2} 
+digitos		[0-9]
 
 %% 
 
-{ws}  {/*nenhuma acao e nenhum retorno*/} 
-/*???*/ ws {return(DELIM);}  
+{ws}		{/*nenhuma acao e nenhum retorno*/} 
 
-"pt" {return(PRINTF);}
-"sc" {return(SCANF);}
-"if" {return(IF);}
-"el" {return(ELSE);}
-"fr" {return(FOR);}
-"wh" {return(WHILE);}
-"fn" {return(FUNCTION);}
-"swc" {return(SWITCH);}
-"cs" {return(CASE);}
-"nil" {return(NULL);}
-"df" {return(DEFAULT);}
+"\n" {printf("%s", yytext); return('\n');}
+" " {printf("%s", yytext); return(ESPACO);}
 
-"]" {return(FIMBLOCO);}  
-"i" {return(INT);}
-"f" {return(FLOAT);}
-"c" {return(CHAR);}
-"s" {return(STRING);}
-"l" {return(LIST);}
+"pt" {printf("%s", yytext); return(PRINTF);}
+"sc" {printf("%s", yytext); return(SCANF);}
+"if" {printf("%s", yytext); return(IF);}
+"el" {printf("%s", yytext); return(ELSE);}
+"fr" {printf("%s", yytext); return(FOR);}
+"wh" {printf("%s", yytext); return(WHILE);}
+"fn" {printf("%s", yytext); return(FUNCTION);}
+"swc" {printf("%s", yytext); return(SWITCH);}
+"cs" {printf("%s", yytext); return(CASE);}
+"nil" {printf("%s", yytext); return(NULL);}
+"df" {printf("%s", yytext); return(DEFAULT);}
 
-"+" {return(PLUS);}
-"-" {return(MINUS);}
-"*" {return(MULT);}
-"**" {return(EXP);}
-"/" {return(DIV);}
-"//" {return(DIVINTEIRA);}
-"%" {return(DIVRESTO);} 
+"]" {printf("%s", yytext); return(FIMBLOCO);} 
 
-">" {return(GRTTHAN);}
-">=" {return(GRTEQ);}
-"<" {return(LSSTHAN);}
-"<=" {return(LSSEQ);}
-"==" {return(EQ);}
+"i" {printf("%s", yytext); printf("%s", yytext); return(INT);}//OK
+"f" {printf("%s", yytext); printf("%s", yytext); return(FLOAT);}
+"c" {printf("%s", yytext); printf("%s", yytext); return(CHAR);}
+"s" {printf("%s", yytext); printf("%s", yytext); return(STRING);}
+"l" {printf("%s", yytext); printf("%s", yytext); return(LIST);}
 
-"=" {return(ATR);}
-"-=" {return(MINATR);}
-"+=" {return(PLSATR);} 
+"+" {printf("%s", yytext); printf("%s", yytext); return(PLUS);}
+"-" {printf("%s", yytext); printf("%s", yytext); return(MINUS);}
+"*" {printf("%s", yytext); printf("%s", yytext); return(MULT);}
+"**" {printf("%s", yytext); printf("%s", yytext); return(EXP);}
+"/" {printf("%s", yytext); printf("%s", yytext); return(DIV);}
+"//" {printf("%s", yytext); printf("%s", yytext); return(DIVINTEIRA);}
+"%" {printf("%s", yytext); printf("%s", yytext); return(DIVRESTO);}  
 
-/*???*/ "~" {return();} 
+">" {printf("%s", yytext); return(GRTTHAN);}
+">=" {printf("%s", yytext); return(GRTEQ);}
+"<" {printf("%s", yytext); return(LSSTHAN);}
+"<=" {printf("%s", yytext); return(LSSEQ);}
+"==" {printf("%s", yytext); return(EQ);}
 
-"&" {return(AND);}
-"|" {return(OR);}
-"@" {return(XOR);}
-"!" {return(NOT);}
+"=" {printf("%s", yytext); return(ATR);}
+"-=" {printf("%s", yytext); return(MINATR);}
+"+=" {printf("%s", yytext); return(PLSATR);} 
 
-"br" {return(BREAK);}
-"rt" {return(RETURN);}
-"ct" {return(CONTINUE);}
+"~" {printf("%s", yytext); return('~');} 
+"&" {printf("%s", yytext); return('&');}
+"|" {printf("%s", yytext); return('|');}
+"@" {printf("%s", yytext); return('@');}
+"!" {printf("%s", yytext); return('!');}
 
-[-]*[0-9]+ {return(INT);} 
+"br" {printf("%s", yytext); return(BREAK);}
+"rt" {printf("%s", yytext); return(RETURN);}
+"ct" {printf("%s", yytext); return(CONTINUE);}
 
-[-]*[0-9]+[.][0-9]+ {return(DEC);} 
+[a-z][a-z0-9]?[a-z0-9]?  {printf("%s", yytext); return(ID);} 
+[-]?[0-9]+  {printf("%s", yytext); return(NINTEIRO);} 
+({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})  {printf("%s", yytext); return(NDECIMAL);}
+\"([^\"]+)\" {printf("%s", yytext); return(STRING)}  
 
-"," {return(',');}
-";" {return(';');}
-":" {return(':');}
-"{" {return('{');}
-"}" {return('}');}
-"(" {return('(');}
-")" {return(')');}
-" ' " {return(' ' ');}
-
-{identificador} {return(ID);}
-{float} {return(NDECIMAL);}
-{inteiro} {return(NINTEIRO);}
-{string} {return(STRING);}
-{char} {return(CARACTERE);}
-
-
+"," {printf("%s", yytext); return(',');}
+";" {printf("%s", yytext); return(';');}
+":" {printf("%s", yytext); return(':');}
+"{" {printf("%s", yytext); return('{');}
+"}" {printf("%s", yytext); return('}');}
+"(" {printf("%s", yytext); return('(');}
+")" {printf("%s", yytext); return(')');}
+"'" {printf("%s", yytext); return(''');}
 
 %% 
 
@@ -106,6 +94,6 @@ int main(void)
 { 
     /* Call the lexer, then quit. */ 
     yylex(); 
-    return 0; 
+    printf("%s", yytext); return 0; 
 }
 
