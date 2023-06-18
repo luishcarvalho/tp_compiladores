@@ -27,16 +27,28 @@ void insertCell(LinkedList *list, char *symbol, char *symbolType, char *type, in
     }
 }
 
-
-
-bool verifyConflict(Entry entry, LinkedList *list){
+void imprimeLista(LinkedList list){
+    printf("\n|simbolo|tipo do simbolo|tipo\t|linha\t|\n");
     Cell* ponteiroauxiliar;
-    ponteiroauxiliar = list->start;
+    ponteiroauxiliar = list.start->pProx;
     // 0 = false / 1 = true
     //varre a lista
     while (ponteiroauxiliar != NULL){
         //verifica se o simbolo passado bate com algum da lista
-        if (getSymbol(ponteiroauxiliar->entry) == getSymbol(entry)){
+        printInput(ponteiroauxiliar->entry);
+        ponteiroauxiliar = ponteiroauxiliar->pProx;
+    }
+}
+
+
+bool verifyConflict(Entry entry, LinkedList *list){
+    Cell* ponteiroauxiliar;
+    ponteiroauxiliar = list->start->pProx;
+    // 0 = false / 1 = true
+    //varre a lista
+    while (ponteiroauxiliar != NULL){
+        //verifica se o simbolo passado bate com algum da lista
+        if (!strcmp(getSymbol(ponteiroauxiliar->entry), getSymbol(entry))){
             return true;
         }
         ponteiroauxiliar = ponteiroauxiliar->pProx;
@@ -44,4 +56,3 @@ bool verifyConflict(Entry entry, LinkedList *list){
     
     return false;
 }
-

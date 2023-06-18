@@ -1,0 +1,15 @@
+n=0
+pt("Digite os numeros, 0 para sair")
+fn lop 
+	wh 1
+		pt("insira um numero")
+		n1=i(sc())
+		if n1==0
+			br
+		]
+		n+=1
+	]
+]
+lop()
+pt("total de numeros digitados")
+pt(n)

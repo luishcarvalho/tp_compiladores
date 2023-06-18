@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_TYPE_LEN    100
+#define MAX_TYPE_LEN    20
 
 typedef struct{
     char symbol[3];
@@ -16,4 +16,4 @@ void setInputValues(Entry *entry, char *symbol, char *symbolType, char *type, in
 
 void printInput(Entry entry);
 
-char getSymbol(Entry entry);
+char * getSymbol(Entry entry);

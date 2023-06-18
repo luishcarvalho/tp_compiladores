@@ -1,0 +1,22 @@
+pt("digite um numero")
+n1=i(sc())
+pt("digite um numero")
+n2=i(sc())
+pt("digite o tipo de operação")
+op=sc()
+swc op
+	"soma":
+		pt(n1+n2)
+		br
+	"subtracao":
+		pt(n1-n2)
+		br
+	"multiplicação":
+		pt(n1*n2)
+		br
+	"divisão":
+		pt(n2/n1)
+		br
+	df:
+		pt("operação invalida")
+	]

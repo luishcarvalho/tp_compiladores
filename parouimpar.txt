@@ -1,0 +1,7 @@
+pt("digite um numero")
+num=i(sc())
+if (num%2)==0
+	pt("numero par")
+el
+	pt("numero impar")
+]
