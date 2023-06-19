@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "TabelaSimbolos\tabela.h"
+#include "TabelaSimbolos/tabela.h"
 
 LinkedTable *table;
 void yyerror(char *);
@@ -9,7 +9,7 @@ int yylex(void);
 void reduce_print(char *);
 extern int linha;
 int erro = 0;
-extern int CODE_PRINT;
+int CODE_PRINT;
 extern char * yytext;
 extern char last_id[3];
 extern void print_linha();
@@ -151,27 +151,32 @@ op_rel : GRTTHAN {reduce_print("reduced by op_rel -> GRTTHAN\n");}
 %%	
 
 void reduce_print(char *s){
-	if (!CODE_PRINT)
+	if (CODE_PRINT)
 		printf(s);
 }
 
 void yyerror(char *s) {
 	printf("Programa sintaticamente incorreto\n");
 	printf("Erro proximo da linha: %d\n", linha);
-	printf("%s\n",last_id);
 	erro = 1;
 }
 
-int main(){
+int main(int argc, char **argv){
+	if (argc == 2){
+		if (strcmp(argv[1], "0"))
+			CODE_PRINT = 0;
+		else
+			CODE_PRINT = 1;
+	}
 	print_linha();
 	table = initializeTable();
-    createEmptyTable(table);
+	createEmptyTable(table);
 	insertScopeCell(table);
 	scopeCell = table->end;
 	yyparse();
 	imprimeLista(scopeCell->inputList);
 	if (!erro)
-		printf("Programa sintaticamente correto");
+		printf("Programa sintaticamente correto\n");
 	return 0;
 }
 
