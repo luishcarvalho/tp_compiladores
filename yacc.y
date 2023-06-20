@@ -151,7 +151,7 @@ op_rel : GRTTHAN {reduce_print("reduced by op_rel -> GRTTHAN\n");}
 %%	
 
 void reduce_print(char *s){
-	if (CODE_PRINT)
+	if (!CODE_PRINT)
 		printf(s);
 }
 
