@@ -98,13 +98,13 @@ digitos		[0-9]
 /*codigo em C. Foi criado o main, mas podem ser criadas outras funcoes aqui.*/ 
 
 void print_linha (){
-    if (!CODE_PRINT)
+    if (CODE_PRINT)
         printf("\n%d ", linha);
     linha++;
 }
 
 void print_codigo (char *s){
-    if (!CODE_PRINT)
+    if (CODE_PRINT)
         printf("%s", s);
 }
 
