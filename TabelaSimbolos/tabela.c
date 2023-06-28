@@ -44,3 +44,42 @@ void insertScopeCell(LinkedTable *table){
         list->end = cell;
     }*/
 }
+
+void clearScopeEntryList(ScopeCell *scopeCell) {
+    if (scopeCell == NULL) {
+        return;
+    }
+
+    createEmptyList(&scopeCell->inputList);
+}
+
+void removeScopeCell(LinkedTable *table){
+    ScopeCell* secondLast = table->start;
+
+    while(secondLast->pProx->pProx != NULL){
+        secondLast = secondLast->pProx;
+    }
+
+    secondLast->pProx = NULL;
+    table->end = secondLast;
+
+}
+
+ScopeCell *getCurrentScope(LinkedTable *table){
+    if (table->end == NULL) { //Para verificar se tem no mínimo um escopo válido
+        return NULL;
+    }
+
+    ScopeCell *currentScope = table->end;
+
+    return currentScope;
+}
+
+void removeScope(LinkedTable *table) {
+    ScopeCell *currentScope = getCurrentScope(table);
+    if(currentScope!=NULL){
+        clearScopeEntryList(currentScope); //Limpa a lista de símbolos. Serve apenas para liberar memória
+        removeScopeCell(table); //Simplesmente deleta a última célula da tabela.
+    }
+}
+

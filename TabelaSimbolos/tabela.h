@@ -20,3 +20,5 @@ LinkedTable *initializeTable();
 void createEmptyTable(LinkedTable *table);
 
 void insertScopeCell(LinkedTable *table);
+
+ScopeCell *getCurrentScope(LinkedTable *table);
