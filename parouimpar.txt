@@ -1,7 +1,9 @@
 pt("digite um numero")
 num=i(sc())
 if (num%2)==0
-	pt("numero par")
+	pr=s(num)
+	pt("numero par"+pr)
 el
-	pt("numero impar")
+	pr=s(num)
+	pt("numero impar"+pr)
 ]

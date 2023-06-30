@@ -8,13 +8,14 @@ void setInputValues(Entry *entry, char *symbol, char *symbolType, char *type, in
     entry->line = line;
 }
 
-void printInput(Entry entry){ //vai printar tudo cagado
-    printf("|%c%c%c\t|%s\t|%s\t|%d\t|\n",entry.symbol[0],entry.symbol[1],entry.symbol[2], entry.symbolType, entry.type, entry.line);
+void printInput(Entry entry){
+    printf("|%s\t|%s\t|%s\t|%d\t|\n",entry.symbol, entry.symbolType, entry.type, entry.line);
 }
 
 
 char * getSymbol(Entry entry){
-    char * symbol = (char*)malloc(sizeof(char)*3);
+    char * symbol = (char*)malloc(sizeof(char)*4);
     strcpy(symbol, entry.symbol);
+    symbol[3] = '\0';
     return symbol;
 }

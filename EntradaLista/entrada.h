@@ -6,7 +6,7 @@
 #define MAX_TYPE_LEN    20
 
 typedef struct{
-    char symbol[3];
+    char symbol[4];
     char symbolType[MAX_TYPE_LEN];
     char type[MAX_TYPE_LEN];
     int line;

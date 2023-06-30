@@ -22,3 +22,9 @@ void createEmptyTable(LinkedTable *table);
 void insertScopeCell(LinkedTable *table);
 
 ScopeCell *getCurrentScope(LinkedTable *table);
+
+void removeScope(LinkedTable *table);
+
+void removeScopeCell(LinkedTable *table);
+
+void clearScopeEntryList(ScopeCell *scopeCell);

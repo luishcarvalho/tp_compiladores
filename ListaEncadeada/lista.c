@@ -18,7 +18,8 @@ void insertCell(LinkedList *list, char *symbol, char *symbolType, char *type, in
     Entry newInput;
     setInputValues(&newInput, symbol, symbolType, type, line);
 
-    if (verifyConflict(newInput, list) == 0){
+
+    if (verifyConflict(newInput, list) == false){
         Cell *cell = (Cell*)malloc(CELL_SIZE);
         cell->entry = newInput;
         cell->pProx = NULL;
@@ -48,11 +49,15 @@ bool verifyConflict(Entry entry, LinkedList *list){
     //varre a lista
     while (ponteiroauxiliar != NULL){
         //verifica se o simbolo passado bate com algum da lista
-        if (!strcmp(getSymbol(ponteiroauxiliar->entry), getSymbol(entry))){
+        char* a = getSymbol(ponteiroauxiliar->entry);
+        char* b = getSymbol(entry);
+
+        if (strcmp(a, b) == 0){
             return true;
         }
         ponteiroauxiliar = ponteiroauxiliar->pProx;
     }
+    
     
     return false;
 }

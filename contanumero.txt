@@ -10,6 +10,6 @@ fn lop
 		n+=1
 	]
 ]
-lop()
+lp()
 pt("total de numeros digitados")
 pt(n)
