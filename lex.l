@@ -10,6 +10,7 @@ void print_linha ();
 extern int CODE_PRINT;
 int linha = 0;
 char last_id[4];
+extern YYSTYPE yylval;
 
 %} 
 
