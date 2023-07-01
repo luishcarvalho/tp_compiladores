@@ -78,8 +78,8 @@ digitos		[0-9]
 "rt" {print_codigo(yytext); return(RETURN);}
 "ct" {print_codigo(yytext); return(CONTINUE);}
 
-[a-z][a-z0-9]?[a-z0-9]?  {print_codigo(yytext); strcpy(last_id, "   "); strcpy(last_id, yytext); return(ID);} 
-[-]?[0-9]+  { print_codigo(yytext); return(NINTEIRO);} 
+[a-z][a-z0-9]?[a-z0-9]?  {print_codigo(yytext); strcpy(last_id, yytext); return(ID);} 
+[0-9]+  { print_codigo(yytext); return(NINTEIRO);} 
 ({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})  {print_codigo(yytext); return(NDECIMAL);}
 \"([^\"]+)\" { print_codigo(yytext); return(STRING);}  
 \'([^\']) {print_codigo(yytext); return(CHARACTER);} 

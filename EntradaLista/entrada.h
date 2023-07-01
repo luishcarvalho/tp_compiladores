@@ -8,12 +8,14 @@
 typedef struct{
     char symbol[4];
     char symbolType[MAX_TYPE_LEN];
-    char type[MAX_TYPE_LEN];
+    char type;
     int line;
 }Entry; //Entrada na tabela de símbolos
 
-void setInputValues(Entry *entry, char *symbol, char *symbolType, char *type, int line);
+void setInputValues(Entry *entry, char *symbol, char *symbolType, char type, int line);
 
 void printInput(Entry entry);
 
 char * getSymbol(Entry entry);
+
+char getType(Entry entry);

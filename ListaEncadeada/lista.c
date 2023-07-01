@@ -14,7 +14,7 @@ void createEmptyList(LinkedList *list){
     list->start->pProx = NULL;
 }
 
-void insertCell(LinkedList *list, char *symbol, char *symbolType, char *type, int line){
+void insertCell(LinkedList *list, char *symbol, char *symbolType, char type, int line){
     Entry newInput;
     setInputValues(&newInput, symbol, symbolType, type, line);
 
@@ -60,4 +60,21 @@ bool verifyConflict(Entry entry, LinkedList *list){
     
     
     return false;
+}
+
+
+char findType(char * identificador, LinkedList list){
+    Cell* ponteiroauxiliar;
+    ponteiroauxiliar = list.start->pProx;
+    // 0 = false / 1 = true
+    //varre a lista
+    while (ponteiroauxiliar != NULL){
+        //verifica se o simbolo passado bate com algum da lista
+        if (strcmp(identificador, getSymbol(ponteiroauxiliar->entry)) == 0){
+            return getType(ponteiroauxiliar->entry);
+        }
+        ponteiroauxiliar = ponteiroauxiliar->pProx;
+    }
+    
+    return 'I';
 }

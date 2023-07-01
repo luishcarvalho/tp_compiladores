@@ -15,8 +15,18 @@ extern char last_id[4];
 char last_id_atr[4];
 extern void print_linha();
 ScopeCell *scopeCell;
-char tipo[20];
-int is_declr=0;
+bool is_declr=0;
+bool erro_seman = 0;
+int linha_erro;
+
+void check_error (char tipo1, char tipo2);
+
+typedef struct type
+{
+    char type;
+}type;
+
+#define YYSTYPE type
 
 %}
 
@@ -52,36 +62,37 @@ stmt : atr {reduce_print("reduced by stmt -> atr\n");}
 	| while_stmt  {reduce_print("reduced by stmt ->  while_stmt\n");}
 	| fn_stmt  {reduce_print("reduced by stmt ->  fn_stmt\n");}
 	| case_stmt  {reduce_print("reduced by stmt ->  case_stmt\n");}
-	| PRINTF '(' return_stmts ')' {reduce_print("reduced by stmt ->  PRINTF '(' return_stmts ')'\n");}
+	| PRINTF '(' return_stmts ')' {reduce_print("reduced by stmt ->  PRINTF '(' return_stmts ')'\n"); check_error('l', $3.type);}
 	| desvio
 	| RETURN ESPACO return_stmts
 	| {reduce_print("reduced by stmt -> palavra vazia\n"); }; 
-	| acess '(' ')' {reduce_print("reduced by stmt -> acess '(' ')'\n");}
-	| acess '(' return_stmts ')' {reduce_print("reduced by stmt -> acess '(' return_stmts ')'\n");}
+	| acess '(' ')' {reduce_print("reduced by stmt -> acess '(' ')'\n");check_error($1.type, $1.type);}
+	| acess '(' return_stmts ')' {reduce_print("reduced by stmt -> acess '(' return_stmts ')'\n"); check_error($1.type, $1.type);}
 
-atr : acess GET_ID atr_op return_stmts {reduce_print("reduced by atr -> acess GET_ID atr_op return_stmt\n");if(is_declr)insertCell(&scopeCell->inputList,last_id_atr, "variavel", tipo, linha-1);is_declr=false;} ; 
+atr : acess GET_ID atr_op return_stmts {reduce_print("reduced by atr -> acess GET_ID atr_op return_stmt\n");if(is_declr)insertCell(&scopeCell->inputList,last_id_atr, "variavel", $4.type, linha-1);else check_error($1.type, $4.type);is_declr=false;} ; 
 
 GET_ID : {reduce_print("reduced by GET_ID -> palavra vazia\n"); strcpy(last_id_atr,last_id);};
 
-acess : ID {reduce_print("reduced by acess -> ID\n"); is_declr=true;}
-	| ID '{' return_stmts '}' {reduce_print("reduced by acess -> ID '{' return_stmts '}'\n");};
+acess : ID {reduce_print("reduced by acess -> ID\n"); is_declr=true;$$.type=getTipoID(last_id,*table);}
+	| ID '{' return_stmts '}' {reduce_print("reduced by acess -> ID '{' return_stmts '}'\n");$$.type='u';};
 
-return_stmts : acess C '(' return_stmts ')' {reduce_print("reduced by return_stmts -> acess C '(' return_stmts ')'\n"); strcpy(tipo,"Unk");}
-	| acess C '(' ')' {reduce_print("reduced by return_stmts -> acess C '(' ')'\n"); strcpy(tipo,"Unk");}
-	| '(' return_stmts ')'  {reduce_print("reduced by return_stmts -> '(' return_stmts ')' \n"); strcpy(tipo,"Unk");}
-	| return_stmts op return_stmts {reduce_print("reduced by return_stmts -> return_stmts op return_stmts \n"); strcpy(tipo,"Unk");}
-	| return_stmt {reduce_print("reduced by return_stmts -> return_stmt \n");}
-	| SCANF '(' return_stmts ')' {reduce_print("reduced by return_stmts -> SCANF '(' return_stmts ')'\n"); strcpy(tipo,"str");}
-	| SCANF '(' ')' {reduce_print("reduced by return_stmts -> SCANF '(' ')'\n"); strcpy(tipo,"str");}
-	| op_uni return_stmts {reduce_print("reduced by return_stmts -> op_uni return_stmts\n");strcpy(tipo,"int");} ;
-	| INT '(' return_stmts ')' {reduce_print("reduced by return_stmts -> INT '(' return_stmts ')'\n"); strcpy(tipo,"int");}
-	| FLOAT '(' return_stmts ')' {reduce_print("reduced by return_stmts -> FLOAT '(' return_stmts ')'\n"); strcpy(tipo,"float");}
-	| STR '(' return_stmts ')' {reduce_print("reduced by return_stmts -> STR '(' return_stmts ')'\n"); strcpy(tipo,"str");}
-	| CHAR '(' return_stmts ')' {reduce_print("reduced by return_stmts -> CHAR '(' return_stmts ')'\n"); strcpy(tipo,"char");};
+return_stmts : acess C '(' return_stmts ')' {reduce_print("reduced by return_stmts -> acess C '(' return_stmts ')'\n"); $$.type='u';}
+	| acess C '(' ')' {reduce_print("reduced by return_stmts -> acess C '(' ')'\n"); $$.type='u';}
+	| '(' return_stmts ')'  {reduce_print("reduced by return_stmts -> '(' return_stmts ')' \n"); $$.type=$2.type;}
+	| return_stmts op return_stmts {reduce_print("reduced by return_stmts -> return_stmts op return_stmts \n"); check_error($1.type, $3.type); $$.type=$1.type;}
+	| return_stmt {reduce_print("reduced by return_stmts -> return_stmt \n"); $$.type=$1.type;}
+	| SCANF '(' return_stmts ')' {reduce_print("reduced by return_stmts -> SCANF '(' return_stmts ')'\n"); $$.type='l'; check_error('l', $3.type);}
+	| SCANF '(' ')' {reduce_print("reduced by return_stmts -> SCANF '(' ')'\n"); $$.type='l';}
+	| op_uni return_stmts {reduce_print("reduced by return_stmts -> op_uni return_stmts\n"); $$.type='n';check_error($2.type,'n');} ;
+	| INT '(' return_stmts ')' {reduce_print("reduced by return_stmts -> INT '(' return_stmts ')'\n"); $$.type='n';}
+	| FLOAT '(' return_stmts ')' {reduce_print("reduced by return_stmts -> FLOAT '(' return_stmts ')'\n"); $$.type='n';}
+	| STR '(' return_stmts ')' {reduce_print("reduced by return_stmts -> STR '(' return_stmts ')'\n"); $$.type='l';}
+	| CHAR '(' return_stmts ')' {reduce_print("reduced by return_stmts -> CHAR '(' return_stmts ')'\n"); $$.type='l';};
 
-C : {reduce_print("reduced by C -> palavra vazia\n");if(strcmp(last_id,last_id_atr)) is_declr=false;};
+C : {reduce_print("reduced by C -> palavra vazia\n");if(strcmp(last_id,last_id_atr) == 0) is_declr=false;};
 
-return_stmt : acess {reduce_print("reduced by return_stmt -> acess\n"); strcpy(tipo,"Unk");} | literal {reduce_print("reduced by return_stmt -> literal\n");};
+return_stmt : acess C {reduce_print("reduced by return_stmt -> acess\n"); $$.type=$1.type;} 
+	| literal {reduce_print("reduced by return_stmt -> literal\n");$$.type=$1.type;};
 
 op : op_rel {reduce_print("reduced by op -> op_rel\n");} 
 	| op_mat {reduce_print("reduced by op -> op_mat\n");}
@@ -112,7 +123,7 @@ if_smt : IF I ESPACO return_stmts '\n' stmts FIMBLOCO E {reduce_print("reduced b
 
 fn_stmt : head I body E {reduce_print("reduced by fn_stmt -> head body\n");};
 
-head : FUNCTION ESPACO ID ESPACO {reduce_print("reduced by head -> FUNCTION ESPACO ID ESPACO\n"); insertCell(&scopeCell->inputList,last_id, "Function", "Unk", linha-1);};
+head : FUNCTION ESPACO ID ESPACO {reduce_print("reduced by head -> FUNCTION ESPACO ID ESPACO\n"); insertCell(&scopeCell->inputList,last_id, "Function", 'u', linha-1);};
 
 body : params '\n' stmts FIMBLOCO {reduce_print("reduced by body -> ESPACO params '\\n' stmts FIMBLOCO\n");};
 
@@ -123,12 +134,12 @@ params : param ';' params {reduce_print("reduced by params -> param ';' params\n
 param : ID atr_op return_stmt {reduce_print("reduced by param -> ID atr_op return_stmt\n");}
 		| ID {reduce_print("reduced by param -> ID\n");};
 
-literal : NDECIMAL {reduce_print("reduced by literal -> NDECIMAL\n"); strcpy(tipo,"float");}
-		| NINTEIRO {reduce_print("reduced by literal -> NINTEIRO\n"); strcpy(tipo,"int");}
-		| NULLT {reduce_print("reduced by literal -> NULLT\n"); strcpy(tipo,"null");}
-		| CHARACTER {reduce_print("reduced by literal -> CHARACTER\n"); strcpy(tipo,"char");}
-		| STRING {reduce_print("reduced by literal -> STRING\n"); strcpy(tipo,"str");}
-		| lista {reduce_print("reduced by literal -> lista\n"); strcpy(tipo,"list");};
+literal : NDECIMAL {reduce_print("reduced by literal -> NDECIMAL\n"); $$.type='n';}
+		| NINTEIRO {reduce_print("reduced by literal -> NINTEIRO\n"); $$.type='n';}
+		| NULLT {reduce_print("reduced by literal -> NULLT\n"); $$.type='u';}
+		| CHARACTER {reduce_print("reduced by literal -> CHARACTER\n"); $$.type='l';}
+		| STRING {reduce_print("reduced by literal -> STRING\n"); $$.type='l';}
+		| lista {reduce_print("reduced by literal -> lista\n"); $$.type='I';};
 
 lista : '{' return_stmts return_stmts_list '}' {reduce_print("reduced by lista -> '{' return_stmts return_stmts_list '}'\n");};
 
@@ -165,9 +176,24 @@ void reduce_print(char *s){
 }
 
 void yyerror(char *s) {
-	printf("Programa sintaticamente incorreto\n");
+	printf("\nPrograma sintaticamente incorreto\n");
 	printf("Erro proximo da linha: %d\n", linha);
 	erro = 1;
+}
+
+void check_error (char tipo1, char tipo2){
+	if (tipo1 == 'I' || tipo2 == 'I'){
+		if (!erro_seman) linha_erro = linha;
+		erro_seman = true;
+	}
+	if (tipo1 == 'u' || tipo2 == 'u')
+		return;
+	if (tipo1 == tipo2)
+		return;
+	else{
+		if (!erro_seman) linha_erro = linha;
+		erro_seman = true;
+	}
 }
 
 int main(int argc, char **argv){
@@ -184,8 +210,15 @@ int main(int argc, char **argv){
 	scopeCell = table->end;
 	yyparse();
 	imprimeLista(scopeCell->inputList);
-	if (!erro)
+	if (!erro){
 		printf("Programa sintaticamente correto\n");
+		if (erro_seman){
+			printf("Programa semanticamente incorreto\nOperacoes com tipos incompativeis ou variavel usada antes de ser inicializada\n");
+			printf("Erro proximo da linha: %d\n", linha_erro);
+		}
+		else
+			printf("Programa semanticamente correto");
+	}
 	return 0;
 }
 

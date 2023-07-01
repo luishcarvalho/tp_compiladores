@@ -1,6 +1,8 @@
 pt("digite um numero")
-num=i(sc())
-if (num%2)==0
+inp=sc()
+num=i(inp)
+r=num%2
+if r==(1-1)
 	pr=s(num)
 	pt("numero par"+pr)
 el

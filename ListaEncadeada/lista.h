@@ -20,8 +20,10 @@ void initialize(LinkedList *list);
 
 void createEmptyList(LinkedList *list);
 
-void insertCell(LinkedList *list, char *symbol, char *symbolType, char *type, int line);
+void insertCell(LinkedList *list, char *symbol, char *symbolType, char type, int line);
 
 void imprimeLista(LinkedList list);
 
 bool verifyConflict(Entry entry, LinkedList *list);
+
+char findType(char * identificador, LinkedList list);

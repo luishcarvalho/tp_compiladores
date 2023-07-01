@@ -19,6 +19,7 @@ void createEmptyTable(LinkedTable *table){
     table->start = (struct ScopeCell*)malloc(SCOPE_CELL_SIZE); //TEM QUE VER SE FUNCIONA
     table->end = table->start;
     table->start->pProx = NULL;
+    table->start->pAnt = NULL; 
     table->start->inputList = initialEntryList;
 }
 
@@ -31,6 +32,7 @@ void insertScopeCell(LinkedTable *table){
     ScopeCell *scopeCell = (ScopeCell*)malloc(SCOPE_CELL_SIZE);
     scopeCell->inputList = newEntryList;
     scopeCell->pProx = NULL;
+    scopeCell->pAnt = table->end;
     table->end->pProx = scopeCell;
     table->end = scopeCell;
     /*Entry newInput;
@@ -54,11 +56,7 @@ void clearScopeEntryList(ScopeCell *scopeCell) {
 }
 
 void removeScopeCell(LinkedTable *table){
-    ScopeCell* secondLast = table->start;
-
-    while(secondLast->pProx->pProx != NULL){
-        secondLast = secondLast->pProx;
-    }
+    ScopeCell* secondLast = table->end->pAnt;
 
     secondLast->pProx = NULL;
     table->end = secondLast;
@@ -81,5 +79,22 @@ void removeScope(LinkedTable *table) {
         clearScopeEntryList(currentScope); //Limpa a lista de símbolos. Serve apenas para liberar memória
         removeScopeCell(table); //Simplesmente deleta a última célula da tabela.
     }
+}
+
+char getTipoID(char * id, LinkedTable table){
+    ScopeCell * aux =  table.end;
+
+    char tipo;
+    do
+    {
+        tipo = findType(id,aux->inputList);
+
+        aux = aux->pAnt;
+        if (tipo != 'I')
+            return tipo;
+        if (aux == NULL)
+            return 'I';
+    } while (true);
+
 }
 

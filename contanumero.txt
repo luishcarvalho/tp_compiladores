@@ -1,5 +1,5 @@
 n=0
-pt("Digite os numeros, 0 para sair")
+pt("Digite o numero 0 para sair")
 fn lop 
 	wh 1
 		pt("insira um numero")
@@ -9,7 +9,7 @@ fn lop
 		]
 		n+=1
 	]
+	rt n
 ]
-lp()
-pt("total de numeros digitados")
-pt(n)
+pt("total de numeros digitados"+lop())
+pt(s(n))
