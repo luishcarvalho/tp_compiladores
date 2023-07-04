@@ -12,21 +12,24 @@ int erro = 0;
 int CODE_PRINT = 1;
 extern char * yytext;
 extern char last_id[4];
+extern char last_op[4];
+extern char last_number[100];
 char last_id_atr[4];
 extern void print_linha();
 ScopeCell *scopeCell;
 bool is_declr=0;
 bool erro_seman = 0;
-bool atr_op = 0;
-bool atr_plus = 0;
+char str_count[100];
+char temporary[100];
 int linha_erro;
 
-int contador = 1;
+int contador = 0;
 
 void check_error (char tipo1, char tipo2);
 typedef struct type{
 	char type;
-	char nome[100];
+	char vl[100];
+	char op[4];
 }type;
 
 FILE *arquivoEnderecos;
@@ -83,18 +86,24 @@ stmt : atr {reduce_print("reduced by stmt -> atr\n");}
 atr : acess GET_ID atr_op return_stmts {reduce_print("reduced by atr -> acess GET_ID atr_op return_stmt\n");
 										if(is_declr)insertCell(&scopeCell->inputList,last_id_atr, "variavel", $4.type, linha-1);
 										else check_error($1.type, $4.type);
-										is_declr=false;sprintf(codigo3, "T%d = ", contador++); strcat(codigo3, $4.nome); fprintf(arquivoEnderecos, "%s\n", codigo3);} ; 
+										is_declr=false;
+										if(!strcmp($3.op, "+=")){fprintf(arquivoEnderecos, "%s=%s+%s\n", $1.vl, $1.vl, $4.vl);}
+										else if(!strcmp($3.op, "-=")){fprintf(arquivoEnderecos, "%s=%s-%s\n", $1.vl, $1.vl, $4.vl);}
+										else{fprintf(arquivoEnderecos, "%s=%s\n", $1.vl, $4.vl);} } ; 
 
 GET_ID : {reduce_print("reduced by GET_ID -> palavra vazia\n"); strcpy(last_id_atr,last_id);};
 
-acess : ID {reduce_print("reduced by acess -> ID\n"); is_declr=true;$$.type=getTipoID(last_id,*table);}
+acess : ID {reduce_print("reduced by acess -> ID\n"); is_declr=true;$$.type=getTipoID(last_id,*table); strcpy($$.vl, last_id);}
 	| ID '{' return_stmts '}' {reduce_print("reduced by acess -> ID '{' return_stmts '}'\n");$$.type='u';};
 
 return_stmts : acess C '(' return_stmts ')' {reduce_print("reduced by return_stmts -> acess C '(' return_stmts ')'\n"); $$.type='u';}
 	| acess C '(' ')' {reduce_print("reduced by return_stmts -> acess C '(' ')'\n"); $$.type='u';}
 	| '(' return_stmts ')'  {reduce_print("reduced by return_stmts -> '(' return_stmts ')' \n"); $$.type=$2.type;}
-	| return_stmts op return_stmts {reduce_print("reduced by return_stmts -> return_stmts op return_stmts \n"); check_error($1.type, $3.type); $$.type=$1.type; strcpy($$.nome, strcat($1.nome,strcat($2.nome, $3.nome)));}
-	| return_stmt {reduce_print("reduced by return_stmts -> return_stmt \n"); $$.type=$1.type;strcpy($$.nome , $1.nome);}
+	| return_stmts op return_stmts {reduce_print("reduced by return_stmts -> return_stmts op return_stmts \n"); check_error($1.type, $3.type); $$.type=$1.type; 
+									contador++; sprintf(str_count,"%d", contador);
+									strcpy(temporary, "t"); strcat(temporary, str_count);strcpy($$.vl, temporary);
+									fprintf(arquivoEnderecos, "%s = %s %s %s\n", $$.vl, $1.vl, $2.op, $3.vl);}
+	| return_stmt {reduce_print("reduced by return_stmts -> return_stmt \n"); $$.type=$1.type;strcpy($$.vl , $1.vl);}
 	| SCANF '(' return_stmts ')' {reduce_print("reduced by return_stmts -> SCANF '(' return_stmts ')'\n"); $$.type='l'; check_error('l', $3.type);}
 	| SCANF '(' ')' {reduce_print("reduced by return_stmts -> SCANF '(' ')'\n"); $$.type='l';}
 	| op_uni return_stmts {reduce_print("reduced by return_stmts -> op_uni return_stmts\n"); $$.type='n';check_error($2.type,'n');} ;
@@ -105,12 +114,12 @@ return_stmts : acess C '(' return_stmts ')' {reduce_print("reduced by return_stm
 
 C : {reduce_print("reduced by C -> palavra vazia\n");if(strcmp(last_id,last_id_atr) == 0) is_declr=false;};
 
-return_stmt : acess C {reduce_print("reduced by return_stmt -> acess\n"); $$.type=$1.type;} 
-	| literal {reduce_print("reduced by return_stmt -> literal\n");$$.type=$1.type; sprintf($$.nome,"%s", $1.nome);};
+return_stmt : acess C {reduce_print("reduced by return_stmt -> acess\n"); $$.type=$1.type; strcpy($$.vl, $1.vl);printf("ACESS: %s\n\n", $$.vl);} 
+	| literal {reduce_print("reduced by return_stmt -> literal\n");$$.type=$1.type; strcpy($$.vl, $1.vl); printf("LITERAL %s\n\n", $$.vl);};
 
-op : op_rel {reduce_print("reduced by op -> op_rel\n"); strcpy($$.nome, $1.nome);} 
-	| op_mat {reduce_print("reduced by op -> op_mat\n");strcpy($$.nome, $1.nome);}
-	| opt_log {reduce_print("reduced by op -> opt_log\n");strcpy($$.nome, $1.nome);};
+op : op_rel {reduce_print("reduced by op -> op_rel\n");strcpy($$.op, $1.op);} 
+	| op_mat {reduce_print("reduced by op -> op_mat\n");strcpy($$.op, $1.op);}
+	| opt_log {reduce_print("reduced by op -> opt_log\n");};
 
 I : {insertScopeCell(table);scopeCell = getCurrentScope(table);};
 E : {imprimeLista(scopeCell->inputList);removeScopeCell(table);scopeCell = getCurrentScope(table);};
@@ -148,11 +157,11 @@ params : param ';' params {reduce_print("reduced by params -> param ';' params\n
 param : ID atr_op return_stmt {reduce_print("reduced by param -> ID atr_op return_stmt\n");}
 		| ID {reduce_print("reduced by param -> ID\n");};
 
-literal : NDECIMAL {reduce_print("reduced by literal -> NDECIMAL\n"); $$.type='n';}
-		| NINTEIRO {reduce_print("reduced by literal -> NINTEIRO\n"); $$.type='n'; strcpy($$.nome, yytext);}
+literal : NDECIMAL {reduce_print("reduced by literal -> NDECIMAL\n"); $$.type='n'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
+		| NINTEIRO {reduce_print("reduced by literal -> NINTEIRO\n"); $$.type='n'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
 		| NULLT {reduce_print("reduced by literal -> NULLT\n"); $$.type='u';}
-		| CHARACTER {reduce_print("reduced by literal -> CHARACTER\n"); $$.type='l';}
-		| STRING {reduce_print("reduced by literal -> STRING\n"); $$.type='l';}
+		| CHARACTER {reduce_print("reduced by literal -> CHARACTER\n"); $$.type='l'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
+		| STRING {reduce_print("reduced by literal -> STRING\n"); $$.type='l'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
 		| lista {reduce_print("reduced by literal -> lista\n"); $$.type='I';};
 
 lista : '{' return_stmts return_stmts_list '}' {reduce_print("reduced by lista -> '{' return_stmts return_stmts_list '}'\n");};
@@ -160,26 +169,26 @@ lista : '{' return_stmts return_stmts_list '}' {reduce_print("reduced by lista -
 return_stmts_list : ',' return_stmts_list  {reduce_print("reduced by return_stmts_list -> ',' return_stmts_list\n");}
 					| {reduce_print("reduced by return_stmts_list -> palavra vazia\n");};
 
-opt_log : '&' {reduce_print("reduced by opt_log -> '&'\n");strcpy($$.nome, yytext);}
-		| '|' {reduce_print("reduced by opt_log -> '|'\n");strcpy($$.nome, yytext);}
-		| '@' {reduce_print("reduced by opt_log -> '@'\n");strcpy($$.nome, yytext);};
-atr_op : ATR {reduce_print("reduced by atr_op -> ATR\n"); atr_op = false; atr_plus = false;}
-		| MINATR {reduce_print("reduced by atr_op -> MINATR\n"); is_declr=false; atr_op = true; atr_plus = false;}
-		| PLSATR{reduce_print("reduced by atr_op -> PLSATR\n"); is_declr=false; atr_op = true; atr_plus = true;};
-op_uni : '~' {reduce_print("reduced by op_uni -> '~'\n");strcpy($$.nome, yytext);};
-op_mat : PLUS {reduce_print("reduced by op_mat -> PLUS\n"); strcpy($$.nome, yytext);}
-		| MINUS {reduce_print("reduced by op_mat -> MINUS\n"); strcpy($$.nome, yytext);}
-		| MULT {reduce_print("reduced by op_mat -> MULT\n"); strcpy($$.nome, yytext);}
-		| EXP {reduce_print("reduced by op_mat -> EXP\n"); strcpy($$.nome, yytext);}
-		| DIV {reduce_print("reduced by op_mat -> DIV\n"); strcpy($$.nome, yytext);}
-		| DIVINTEIRA {reduce_print("reduced by op_mat -> DIVINTEIRA\n"); strcpy($$.nome, yytext);}
-		| DIVRESTO {reduce_print("reduced by op_mat -> DIVRESTO\n"); strcpy($$.nome, yytext);};
-op_rel : GRTTHAN {reduce_print("reduced by op_rel -> GRTTHAN\n");strcpy($$.nome, yytext);}
-		| LSSTHAN {reduce_print("reduced by op_rel -> LSSTHAN\n");strcpy($$.nome, yytext);}
-		| GRTEQ {reduce_print("reduced by op_rel -> GRTEQ\n");strcpy($$.nome, yytext);}
-		| LSSEQ {reduce_print("reduced by op_rel -> LSSEQ\n");strcpy($$.nome, yytext);}
-		| EQ {reduce_print("reduced by op_rel -> EQ\n");strcpy($$.nome, yytext);}
-		| '!' {reduce_print("reduced by op_rel -> '!'\n");strcpy($$.nome, yytext);};
+opt_log : '&' {reduce_print("reduced by opt_log -> '&'\n");}
+		| '|' {reduce_print("reduced by opt_log -> '|'\n");}
+		| '@' {reduce_print("reduced by opt_log -> '@'\n");};
+atr_op : ATR {reduce_print("reduced by atr_op -> ATR\n");}
+		| MINATR {reduce_print("reduced by atr_op -> MINATR\n"); is_declr=false; strcpy($$.op, last_op);}
+		| PLSATR{reduce_print("reduced by atr_op -> PLSATR\n"); is_declr=false; strcpy($$.op, last_op);};
+op_uni : '~' {reduce_print("reduced by op_uni -> '~'\n");};
+op_mat : PLUS {reduce_print("reduced by op_mat -> PLUS\n"); strcpy($$.op, last_op); printf("OP: %s\n\n", $$.op);}
+		| MINUS {reduce_print("reduced by op_mat -> MINUS\n"); strcpy($$.op, last_op);}
+		| MULT {reduce_print("reduced by op_mat -> MULT\n"); strcpy($$.op, last_op);}
+		| EXP {reduce_print("reduced by op_mat -> EXP\n"); strcpy($$.op, last_op);}
+		| DIV {reduce_print("reduced by op_mat -> DIV\n"); strcpy($$.op, last_op);}
+		| DIVINTEIRA {reduce_print("reduced by op_mat -> DIVINTEIRA\n"); strcpy($$.op, last_op);}
+		| DIVRESTO {reduce_print("reduced by op_mat -> DIVRESTO\n"); strcpy($$.op, last_op);};
+op_rel : GRTTHAN {reduce_print("reduced by op_rel -> GRTTHAN\n");strcpy($$.op, last_op);}
+		| LSSTHAN {reduce_print("reduced by op_rel -> LSSTHAN\n");strcpy($$.op, last_op);}
+		| GRTEQ {reduce_print("reduced by op_rel -> GRTEQ\n");strcpy($$.op, last_op);}
+		| LSSEQ {reduce_print("reduced by op_rel -> LSSEQ\n");strcpy($$.op, last_op);}
+		| EQ {reduce_print("reduced by op_rel -> EQ\n");strcpy($$.op, last_op);}
+		| '!' {reduce_print("reduced by op_rel -> '!'\n");};
 
 
 %%	

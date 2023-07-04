@@ -10,6 +10,8 @@ void print_linha ();
 extern int CODE_PRINT;
 int linha = 0;
 char last_id[4];
+char last_op[4];
+char last_number[100];
 extern YYSTYPE yylval;
 
 %} 
@@ -51,23 +53,23 @@ digitos		[0-9]
 "s" { print_codigo(yytext); return(STR);}
 "l" { print_codigo(yytext); return(LIST);}
 
-"+" { print_codigo(yytext); return(PLUS);}
-"-" {print_codigo(yytext); return(MINUS);}
-"*" {print_codigo(yytext); return(MULT);}
-"**" {print_codigo(yytext); return(EXP);}
-"/" {print_codigo(yytext); return(DIV);}
-"//" {print_codigo(yytext); return(DIVINTEIRA);}
-"%" {print_codigo(yytext); return(DIVRESTO);}  
+"+" { print_codigo(yytext);strcpy(last_op, yytext); return(PLUS);}
+"-" {print_codigo(yytext);strcpy(last_op, yytext); return(MINUS);}
+"*" {print_codigo(yytext);strcpy(last_op, yytext); return(MULT);}
+"**" {print_codigo(yytext);strcpy(last_op, yytext); return(EXP);}
+"/" {print_codigo(yytext);strcpy(last_op, yytext); return(DIV);}
+"//" {print_codigo(yytext);strcpy(last_op, yytext); return(DIVINTEIRA);}
+"%" {print_codigo(yytext);strcpy(last_op, yytext); return(DIVRESTO);}  
 
-">" {print_codigo(yytext); return(GRTTHAN);}
-">=" {print_codigo(yytext); return(GRTEQ);}
-"<" {print_codigo(yytext); return(LSSTHAN);}
-"<=" {print_codigo(yytext); return(LSSEQ);}
-"==" {print_codigo(yytext); return(EQ);}
+">" {print_codigo(yytext); strcpy(last_op, yytext); return(GRTTHAN);}
+">=" {print_codigo(yytext); strcpy(last_op, yytext); return(GRTEQ);}
+"<" {print_codigo(yytext); strcpy(last_op, yytext); return(LSSTHAN);}
+"<=" {print_codigo(yytext); strcpy(last_op, yytext); return(LSSEQ);}
+"==" {print_codigo(yytext); strcpy(last_op, yytext); return(EQ);}
 
 "=" {print_codigo(yytext); return(ATR);}
-"-=" {print_codigo(yytext); return(MINATR);}
-"+=" {print_codigo(yytext); return(PLSATR);} 
+"-=" {print_codigo(yytext); strcpy(last_op, yytext); return(MINATR);}
+"+=" {print_codigo(yytext); strcpy(last_op, yytext); return(PLSATR);} 
 
 "~" {print_codigo(yytext); return('~');} 
 "&" {print_codigo(yytext); return('&');}
@@ -80,10 +82,10 @@ digitos		[0-9]
 "ct" {print_codigo(yytext); return(CONTINUE);}
 
 [a-z][a-z0-9]?[a-z0-9]?  {print_codigo(yytext); strcpy(last_id, yytext); return(ID);} 
-[0-9]+  { print_codigo(yytext); return(NINTEIRO);} 
-({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})  {print_codigo(yytext); return(NDECIMAL);}
-\"([^\"]+)\" { print_codigo(yytext); return(STRING);}  
-\'([^\']) {print_codigo(yytext); return(CHARACTER);} 
+[0-9]+  { print_codigo(yytext);strcpy(last_number, yytext); return(NINTEIRO);} 
+({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})  {print_codigo(yytext); strcpy(last_number, yytext); return(NDECIMAL);}
+\"([^\"]+)\" { print_codigo(yytext); strcpy(last_number, yytext); return(STRING);}  
+\'([^\']) {print_codigo(yytext); strcpy(last_number, yytext); return(CHARACTER);} 
 
 "," {print_codigo(yytext); return(',');}
 ";" {print_codigo(yytext); return(';');}
