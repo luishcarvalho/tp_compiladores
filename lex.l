@@ -81,11 +81,11 @@ digitos		[0-9]
 "rt" {print_codigo(yytext); return(RETURN);}
 "ct" {print_codigo(yytext); return(CONTINUE);}
 
-[a-z][a-z0-9]?[a-z0-9]?  {print_codigo(yytext); strcpy(last_id, yytext); return(ID);} 
+[a-zA-Z][a-zA-Z0-9]?[a-zA-Z0-9]?  {print_codigo(yytext); strcpy(last_id, yytext); return(ID);} 
 [0-9]+  { print_codigo(yytext);strcpy(last_number, yytext); return(NINTEIRO);} 
 ({inteiro}\.{digitos}+)|({inteiro}(\.{digitos}+)?"e"{inteiro})  {print_codigo(yytext); strcpy(last_number, yytext); return(NDECIMAL);}
 \"([^\"]+)\" { print_codigo(yytext); strcpy(last_number, yytext); return(STRING);}  
-\'([^\']) {print_codigo(yytext); strcpy(last_number, yytext); return(CHARACTER);} 
+\'([^\"]) {print_codigo(yytext); strcpy(last_number, yytext); return(CHARACTER);} 
 
 "," {print_codigo(yytext); return(',');}
 ";" {print_codigo(yytext); return(';');}
