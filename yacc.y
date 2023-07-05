@@ -98,7 +98,7 @@ acess : ID {reduce_print("reduced by acess -> ID\n"); is_declr=true;$$.type=getT
 
 return_stmts : acess C '(' return_stmts ')' {reduce_print("reduced by return_stmts -> acess C '(' return_stmts ')'\n"); $$.type='u';}
 	| acess C '(' ')' {reduce_print("reduced by return_stmts -> acess C '(' ')'\n"); $$.type='u';}
-	| '(' return_stmts ')'  {reduce_print("reduced by return_stmts -> '(' return_stmts ')' \n"); $$.type=$2.type;}
+	| '(' return_stmts ')'  {reduce_print("reduced by return_stmts -> '(' return_stmts ')' \n"); $$.type=$2.type; strcpy($$.vl,$2.vl);}
 	| return_stmts op return_stmts {reduce_print("reduced by return_stmts -> return_stmts op return_stmts \n"); check_error($1.type, $3.type); $$.type=$1.type; 
 									contador++; sprintf(str_count,"%d", contador);
 									strcpy(temporary, "t"); strcat(temporary, str_count);strcpy($$.vl, temporary);
@@ -114,8 +114,8 @@ return_stmts : acess C '(' return_stmts ')' {reduce_print("reduced by return_stm
 
 C : {reduce_print("reduced by C -> palavra vazia\n");if(strcmp(last_id,last_id_atr) == 0) is_declr=false;};
 
-return_stmt : acess C {reduce_print("reduced by return_stmt -> acess\n"); $$.type=$1.type; strcpy($$.vl, $1.vl);printf("ACESS: %s\n\n", $$.vl);} 
-	| literal {reduce_print("reduced by return_stmt -> literal\n");$$.type=$1.type; strcpy($$.vl, $1.vl); printf("LITERAL %s\n\n", $$.vl);};
+return_stmt : acess C {reduce_print("reduced by return_stmt -> acess\n"); $$.type=$1.type; strcpy($$.vl, $1.vl);} 
+	| literal {reduce_print("reduced by return_stmt -> literal\n");$$.type=$1.type; strcpy($$.vl, $1.vl); };
 
 op : op_rel {reduce_print("reduced by op -> op_rel\n");strcpy($$.op, $1.op);} 
 	| op_mat {reduce_print("reduced by op -> op_mat\n");strcpy($$.op, $1.op);}
@@ -157,11 +157,11 @@ params : param ';' params {reduce_print("reduced by params -> param ';' params\n
 param : ID atr_op return_stmt {reduce_print("reduced by param -> ID atr_op return_stmt\n");}
 		| ID {reduce_print("reduced by param -> ID\n");};
 
-literal : NDECIMAL {reduce_print("reduced by literal -> NDECIMAL\n"); $$.type='n'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
-		| NINTEIRO {reduce_print("reduced by literal -> NINTEIRO\n"); $$.type='n'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
+literal : NDECIMAL {reduce_print("reduced by literal -> NDECIMAL\n"); $$.type='n'; strcpy($$.vl, last_number);}
+		| NINTEIRO {reduce_print("reduced by literal -> NINTEIRO\n"); $$.type='n'; strcpy($$.vl, last_number);}
 		| NULLT {reduce_print("reduced by literal -> NULLT\n"); $$.type='u';}
-		| CHARACTER {reduce_print("reduced by literal -> CHARACTER\n"); $$.type='l'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
-		| STRING {reduce_print("reduced by literal -> STRING\n"); $$.type='l'; strcpy($$.vl, last_number);printf("INT: %s\n\n", $$.vl);}
+		| CHARACTER {reduce_print("reduced by literal -> CHARACTER\n"); $$.type='l'; strcpy($$.vl, last_number);}
+		| STRING {reduce_print("reduced by literal -> STRING\n"); $$.type='l'; strcpy($$.vl, last_number);}
 		| lista {reduce_print("reduced by literal -> lista\n"); $$.type='I';};
 
 lista : '{' return_stmts return_stmts_list '}' {reduce_print("reduced by lista -> '{' return_stmts return_stmts_list '}'\n");};
@@ -176,7 +176,7 @@ atr_op : ATR {reduce_print("reduced by atr_op -> ATR\n");}
 		| MINATR {reduce_print("reduced by atr_op -> MINATR\n"); is_declr=false; strcpy($$.op, last_op);}
 		| PLSATR{reduce_print("reduced by atr_op -> PLSATR\n"); is_declr=false; strcpy($$.op, last_op);};
 op_uni : '~' {reduce_print("reduced by op_uni -> '~'\n");};
-op_mat : PLUS {reduce_print("reduced by op_mat -> PLUS\n"); strcpy($$.op, last_op); printf("OP: %s\n\n", $$.op);}
+op_mat : PLUS {reduce_print("reduced by op_mat -> PLUS\n"); strcpy($$.op, last_op);}
 		| MINUS {reduce_print("reduced by op_mat -> MINUS\n"); strcpy($$.op, last_op);}
 		| MULT {reduce_print("reduced by op_mat -> MULT\n"); strcpy($$.op, last_op);}
 		| EXP {reduce_print("reduced by op_mat -> EXP\n"); strcpy($$.op, last_op);}
